@@ -1,0 +1,52 @@
+name: Auto Increment Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_prefix:
+        description: 'Tag prefix'
+        required: true
+        default: 'myapp'
+
+jobs:
+  create_tag:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Fetch all tags
+      run: git fetch --tags
+
+    - name: Get the latest tag
+      id: get_latest_tag
+      run: |
+        prefix="${{ github.event.inputs.tag_prefix }}"
+        latest_tag=$(git tag -l "${prefix}*" --sort=-v:refname | head -n 1)
+        if [ -z "$latest_tag" ]; then
+          echo "::set-output name=latest_tag::${prefix}0.0.0"
+        else
+          echo "::set-output name=latest_tag::$latest_tag"
+        fi
+
+    - name: Increment version
+      id: increment_version
+      run: |
+        latest_tag="${{ steps.get_latest_tag.outputs.latest_tagx }}"
+        prefix="${{ github.event.inputs.tag_prefix }}"
+        version=${latest_tag#$prefix}
+        IFS='.' read -r -a parts <<< "$version"
+        major=${parts[0]}
+        minor=${parts[1]}
+        patch=${parts[2]}
+        new_tag="$prefix$major.$minor.$((patch + 1))"
+        echo "::set-output name=new_tag::$new_tag"
+
+    - name: Create Git Tag
+      id: create_tag
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git tag -a ${{ steps.increment_version.outputs.new_tag }} -m "Automatically generated tag ${{ steps.increment_version.outputs.new_tag }}"
+        git push origin ${{ steps.increment_version.outputs.new_tag }}
