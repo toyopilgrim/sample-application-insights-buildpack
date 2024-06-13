@@ -22,7 +22,7 @@ jobs:
     - name: Get the latest tag
       id: get_latest_tag
       run: |
-        prefix="${{ github.event.inputs.tag_prefix }}"
+        prefix="${{ github.event.inputs.tag_prefix }}-"
         latest_tag=$(git tag -l "${prefix}*" --sort=-v:refname | head -n 1)
         if [ -z "$latest_tag" ]; then
           echo "::set-output name=latest_tag::${prefix}0.0.0"
