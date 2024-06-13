@@ -51,4 +51,5 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git tag -a ${{ steps.increment_version.outputs.new_tag }} -m "Automatically generated tag ${{ steps.increment_version.outputs.new_tag }}"
-        git push origin ${{ steps.increment_version.outputs.new_tag }}
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git ${{ steps.increment_version.outputs.new_tag }}
+        
