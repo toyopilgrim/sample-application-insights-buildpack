@@ -44,6 +44,8 @@ jobs:
         echo "::set-output name=new_tag::$new_tag"
 
     - name: Create Git Tag
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       id: create_tag
       run: |
         git config --global user.name 'github-actions[bot]'
