@@ -33,7 +33,7 @@ jobs:
     - name: Increment version
       id: increment_version
       run: |
-        latest_tag="${{ steps.get_latest_tag.outputs.latest_tagx }}"
+        latest_tag="${{ steps.get_latest_tag.outputs.latest_tag }}"
         prefix="${{ github.event.inputs.tag_prefix }}"
         version=${latest_tag#$prefix}
         IFS='.' read -r -a parts <<< "$version"
