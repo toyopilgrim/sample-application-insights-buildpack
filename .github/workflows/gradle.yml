@@ -9,16 +9,13 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+
+permissions:
+   contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
     - uses: actions/checkout@v3
@@ -36,7 +33,7 @@ jobs:
       uses: gradle/actions/setup-gradle@v3
 
     - name: Clean
-      run: ./gradlew --build-cache clean
+      run: ./gradlew clean
 
     - name: Build
-      run: ./gradlew --build-cache build -x test -x check
+      run: ./gradlew build
